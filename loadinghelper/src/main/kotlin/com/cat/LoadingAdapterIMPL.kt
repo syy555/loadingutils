@@ -15,9 +15,7 @@ import com.cat.LoadingHelper.HIDE
 import com.cat.LoadingHelper.LOADFAIL
 import com.cat.LoadingHelper.LOADING
 
-/**
- * Created by lee on 2017/12/7.
- */
+
 class LoadingAdapterIMPL : LoadingAadpter {
 
     val tag = "loading_fragment"
@@ -27,8 +25,9 @@ class LoadingAdapterIMPL : LoadingAadpter {
     var dialogLayout: ILoadingView? = null
     var errorLayout: ILoadingView? = null
     var manager: FragmentManager? = null
-    var fragment: FragmentIMPL? = null
+    lateinit var fragment: FragmentIMPL
     var dialog: DialogIMPL? = null
+    private var id: Long = System.currentTimeMillis()
 
     fun init(manager: FragmentManager, containerId: Int, reload: Runnable) {
         this.mReload = reload
@@ -55,11 +54,16 @@ class LoadingAdapterIMPL : LoadingAadpter {
 
 
     fun initFragment() {
-        fragment = manager?.findFragmentByTag(tag) as FragmentIMPL?
-        if (fragment == null) {
-            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout)
+        try {
+            fragment = manager?.findFragmentByTag(tag) as FragmentIMPL
+            if (fragment.mId != id) {
+                manager?.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
+            }
+        } catch (e: TypeCastException) {
+            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
             manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
         }
+
     }
 
     override fun showLoading() {
@@ -76,7 +80,6 @@ class LoadingAdapterIMPL : LoadingAadpter {
 
 
     override fun showDialogLoading() {
-        hide()
         if (dialogLayout != null) {
             dialog = DialogIMPL().init(this, dialogLayout, LOADING)
             dialog?.show(manager, "alert_loading")
@@ -103,10 +106,13 @@ class LoadingAdapterIMPL : LoadingAadpter {
         var errorView: ILoadingView? = null
         var mType: Int = HIDE
         var reload: Runnable? = null
-        fun init(adapterIMPL: LoadingAdapterIMPL, loadingView: ILoadingView?, errorView: ILoadingView?): FragmentIMPL {
+        var mId: Long = 0
+
+        fun init(adapterIMPL: LoadingAdapterIMPL, loadingView: ILoadingView?, errorView: ILoadingView?, mId: Long): FragmentIMPL {
             this.loadingView = loadingView
             this.errorView = errorView
             this.reload = adapterIMPL.mReload
+            this.mId = mId
             return this
         }
 
@@ -130,8 +136,8 @@ class LoadingAdapterIMPL : LoadingAadpter {
                 mView.addView(mLoadingView)
                 mView.addView(mErrorView)
                 val metrics = resources.displayMetrics
-                mView?.minimumWidth = metrics.widthPixels
-                mView?.minimumHeight = metrics.heightPixels
+                mView.minimumWidth = metrics.widthPixels
+                mView.minimumHeight = metrics.heightPixels
                 return mView
             }
             return null
@@ -176,7 +182,6 @@ class LoadingAdapterIMPL : LoadingAadpter {
         var mLayoutId: ILoadingView? = null
         var mType: Int = 0
         var reload: Runnable? = null
-
         fun init(adapterIMPL: LoadingAdapterIMPL, layout: ILoadingView?, type: Int): DialogIMPL {
             this.mLayoutId = layout
             this.reload = adapterIMPL.mReload

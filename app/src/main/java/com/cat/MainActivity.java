@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 /**
  * Created by lee on 2017/12/8.
@@ -54,6 +56,30 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loadingAadpter.showLoaderr();
 
+            }
+        });
+
+        findViewById(R.id.tv_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ViewGroup)findViewById(R.id.parent)).removeAllViews();
+                FrameLayout frameLayout = new FrameLayout(getBaseContext());
+                frameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+                frameLayout.setId(R.id.container);
+                ((ViewGroup)findViewById(R.id.parent)).addView(frameLayout);
+                loadingAadpter = LoadingHelper.INSTANCE.LoadingHelper(getSupportFragmentManager(), R.id.container, new Runnable() {
+                    @Override
+                    public void run() {
+                        loadingAadpter.hide();
+                    }
+                });
+            }
+        });
+
+        findViewById(R.id.tv_remove).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ViewGroup)findViewById(R.id.parent)).removeAllViews();
             }
         });
 

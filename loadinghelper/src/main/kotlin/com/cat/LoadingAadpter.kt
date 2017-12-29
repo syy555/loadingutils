@@ -1,8 +1,6 @@
 package com.cat
 
-/**
- * Created by lee on 2017/12/7.
- */
+
 interface LoadingAadpter {
 
     // 更新网络失败的点击事件

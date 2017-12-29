@@ -6,8 +6,6 @@ import android.net.NetworkInfo
 
 /**
  * Created by lee on 2017/12/7.
- */
-/**
  * 判断网络是否可用.
  *
  * @param context 上下文
@@ -22,11 +20,9 @@ fun isNetworkValid(context: Context?): Boolean {
         val connectivity = context
                 .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         var info: NetworkInfo? = null
-        if (connectivity == null) {
-            result = false
-        } else {
-            info = connectivity.activeNetworkInfo
-        }
+
+        info = connectivity.activeNetworkInfo
+
         if (info == null) {
             result = false
         } else {
