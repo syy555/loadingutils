@@ -29,7 +29,7 @@ class LoadingAdapterIMPL : LoadingAadpter {
     var dialog: DialogIMPL? = null
     private var id: Long = System.currentTimeMillis()
 
-    fun init(manager: FragmentManager, containerId: Int, reload: Runnable) {
+    fun init(manager: FragmentManager, containerId: Int, reload: Runnable?) {
         this.mReload = reload
         this.manager = manager
         this.containerId = containerId;
