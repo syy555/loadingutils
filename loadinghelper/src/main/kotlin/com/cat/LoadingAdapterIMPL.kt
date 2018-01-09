@@ -29,39 +29,45 @@ class LoadingAdapterIMPL : LoadingAadpter {
     var dialog: DialogIMPL? = null
     private var id: Long = System.currentTimeMillis()
 
-    fun init(manager: FragmentManager, containerId: Int, reload: Runnable?) {
+    fun init(manager: FragmentManager, containerId: Int, reload: Runnable?,loading: ILoadingView,dialogLayout: ILoadingView,error: ILoadingView) {
         this.mReload = reload
         this.manager = manager
-        this.containerId = containerId;
+        this.containerId = containerId
+        this.loadingLayout = loading
+        this.dialogLayout = dialogLayout
+        this.errorLayout = error
+        initFragment()
     }
 
 
     override fun updateReload(reload: Runnable) {
         this.mReload = reload
+        fragment.reload = reload
     }
 
     override fun updateLodingLayout(loading: ILoadingView) {
         this.loadingLayout = loading
+        initFragment()
     }
 
     override fun updateDialogLayout(dialogLayout: ILoadingView) {
         this.dialogLayout = dialogLayout
+        initFragment()
     }
 
     override fun updateErrorLayout(error: ILoadingView) {
         this.errorLayout = error
+        initFragment()
     }
 
 
     fun initFragment() {
         try {
             fragment = manager?.findFragmentByTag(tag) as FragmentIMPL
-            if (fragment.mId != id) {
-                manager?.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
-                fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
-                manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
-            }
-        } catch (e: TypeCastException) {
+            manager?.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
+            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
+            manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
+        } catch (e: Exception) {
             fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
             manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
         }
@@ -69,19 +75,20 @@ class LoadingAdapterIMPL : LoadingAadpter {
     }
 
     override fun showLoading() {
-        initFragment()
+        hide()
         fragment?.mType = LOADING
         show()
     }
 
     override fun showLoaderr() {
-        initFragment()
+        hide()
         fragment?.mType = LOADFAIL
         show()
     }
 
 
     override fun showDialogLoading() {
+        hide()
         if (dialogLayout != null) {
             dialog = DialogIMPL().init(this, dialogLayout, LOADING)
             dialog?.show(manager, "alert_loading")
@@ -95,8 +102,11 @@ class LoadingAdapterIMPL : LoadingAadpter {
     }
 
     override fun hide() {
-        initFragment()
-        manager?.beginTransaction()?.hide(fragment)?.commitAllowingStateLoss()
+        try {
+            fragment = manager?.findFragmentByTag(tag) as FragmentIMPL
+            manager?.beginTransaction()?.hide(fragment)?.commitAllowingStateLoss()
+        } catch (e: TypeCastException) {
+        }
         dialog?.dismissAllowingStateLoss()
     }
 

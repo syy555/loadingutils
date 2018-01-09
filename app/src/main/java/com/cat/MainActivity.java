@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.tv_loading).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        loadingAadpter.hide();
+                        loadingAadpter.showLoaderr();
                     }
                 }, 2000);
             }
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tv_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ViewGroup)findViewById(R.id.parent)).removeAllViews();
                 FrameLayout frameLayout = new FrameLayout(getBaseContext());
                 frameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                 frameLayout.setId(R.id.container);

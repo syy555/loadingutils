@@ -37,10 +37,7 @@ object LoadingHelper {
 
     fun LoadingHelper(manager: FragmentManager, containerId: Int, reload: Runnable?): LoadingAadpter {
         val adapter = LoadingAdapterIMPL()
-        adapter.init(manager, containerId, reload)
-        adapter.updateLodingLayout(defaultLoadingId)
-        adapter.updateDialogLayout(defaultDialogId)
-        adapter.updateErrorLayout(defaultErrorId)
+        adapter.init(manager, containerId, reload,defaultLoadingId,defaultDialogId,defaultErrorId)
         return adapter
     }
 }
