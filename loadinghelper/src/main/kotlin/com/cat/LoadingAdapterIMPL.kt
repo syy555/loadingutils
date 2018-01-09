@@ -58,6 +58,8 @@ class LoadingAdapterIMPL : LoadingAadpter {
             fragment = manager?.findFragmentByTag(tag) as FragmentIMPL
             if (fragment.mId != id) {
                 manager?.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
+                fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
+                manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
             }
         } catch (e: TypeCastException) {
             fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
