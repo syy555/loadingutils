@@ -24,7 +24,7 @@ class LoadingAdapterIMPL : LoadingAadpter {
     var loadingLayout: ILoadingView? = null
     var dialogLayout: ILoadingView? = null
     var errorLayout: ILoadingView? = null
-    var manager: FragmentManager? = null
+    lateinit var manager: FragmentManager
     lateinit var fragment: FragmentIMPL
     var dialog: DialogIMPL? = null
     private var id: Long = System.currentTimeMillis()
@@ -63,10 +63,10 @@ class LoadingAdapterIMPL : LoadingAadpter {
 
     fun initFragment() {
         try {
-            fragment = manager?.findFragmentByTag(tag) as FragmentIMPL
-            manager?.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
+            fragment = manager.findFragmentByTag(tag) as FragmentIMPL
+            manager.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
             fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
-            manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
+            manager.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
         } catch (e: Exception) {
             fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
             manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
@@ -76,13 +76,13 @@ class LoadingAdapterIMPL : LoadingAadpter {
 
     override fun showLoading() {
         hide()
-        fragment?.mType = LOADING
+        fragment.mType = LOADING
         show()
     }
 
     override fun showLoaderr() {
         hide()
-        fragment?.mType = LOADFAIL
+        fragment.mType = LOADFAIL
         show()
     }
 
@@ -97,15 +97,16 @@ class LoadingAdapterIMPL : LoadingAadpter {
 
 
     private fun show() {
-        manager?.beginTransaction()?.show(fragment)?.commitAllowingStateLoss()
-        fragment?.updateView()
+        manager.beginTransaction()?.show(fragment)?.commitAllowingStateLoss()
+        fragment.updateView()
     }
 
     override fun hide() {
         try {
-            fragment = manager?.findFragmentByTag(tag) as FragmentIMPL
-            manager?.beginTransaction()?.hide(fragment)?.commitAllowingStateLoss()
-        } catch (e: TypeCastException) {
+            manager.beginTransaction().hide(fragment).commitAllowingStateLoss()
+        } catch (e: Exception) {
+            fragment = manager.findFragmentByTag(tag) as FragmentIMPL
+            manager?.beginTransaction().hide(fragment)?.commitAllowingStateLoss()
         }
         dialog?.dismissAllowingStateLoss()
     }
