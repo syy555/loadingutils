@@ -13,6 +13,8 @@ interface LoadingAadpter {
 
     fun updateErrorLayout(error: ILoadingView)
 
+    fun updateNetErrorLayout(error: ILoadingView)
+
     fun showLoading()
 
     fun showDialogLoading()

@@ -35,9 +35,17 @@ object LoadingHelper {
         }
     }
 
+    var defaultNetErrorId: ILoadingView = object : ILoadingView {
+
+        override fun onCreateView(context: Context?): View {
+            return LayoutInflater.from(context).inflate(R.layout.view_default_error, null)
+        }
+    }
+
+
     fun LoadingHelper(manager: FragmentManager, containerId: Int, reload: Runnable?): LoadingAadpter {
         val adapter = LoadingAdapterIMPL()
-        adapter.init(manager, containerId, reload,defaultLoadingId,defaultDialogId,defaultErrorId)
+        adapter.init(manager, containerId, reload,defaultLoadingId,defaultDialogId,defaultErrorId,defaultNetErrorId)
         return adapter
     }
 }

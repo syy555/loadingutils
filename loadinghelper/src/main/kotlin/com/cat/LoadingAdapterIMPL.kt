@@ -24,18 +24,20 @@ class LoadingAdapterIMPL : LoadingAadpter {
     var loadingLayout: ILoadingView? = null
     var dialogLayout: ILoadingView? = null
     var errorLayout: ILoadingView? = null
+    var netErrorLayout: ILoadingView? = null
     lateinit var manager: FragmentManager
     lateinit var fragment: FragmentIMPL
     var dialog: DialogIMPL? = null
     private var id: Long = System.currentTimeMillis()
 
-    fun init(manager: FragmentManager, containerId: Int, reload: Runnable?,loading: ILoadingView,dialogLayout: ILoadingView,error: ILoadingView) {
+    fun init(manager: FragmentManager, containerId: Int, reload: Runnable?, loading: ILoadingView, dialogLayout: ILoadingView, error: ILoadingView, netError: ILoadingView) {
         this.mReload = reload
         this.manager = manager
         this.containerId = containerId
         this.loadingLayout = loading
         this.dialogLayout = dialogLayout
         this.errorLayout = error
+        this.netErrorLayout = netError
         initFragment()
     }
 
@@ -60,15 +62,20 @@ class LoadingAdapterIMPL : LoadingAadpter {
         initFragment()
     }
 
+    override fun updateNetErrorLayout(error: ILoadingView) {
+        this.netErrorLayout = error
+        initFragment()
+    }
+
 
     fun initFragment() {
         try {
             fragment = manager.findFragmentByTag(tag) as FragmentIMPL
             manager.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
-            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
+            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, netErrorLayout, id)
             manager.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
         } catch (e: Exception) {
-            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, id)
+            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, netErrorLayout, id)
             manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
         }
 
@@ -115,27 +122,34 @@ class LoadingAdapterIMPL : LoadingAadpter {
     class FragmentIMPL : Fragment() {
         var mLoadingView: View? = null
         var mErrorView: View? = null
+        var mNetErrorView: View? = null
         var loadingView: ILoadingView? = null
         var errorView: ILoadingView? = null
+        var netErrorView: ILoadingView? = null
         var mType: Int = HIDE
         var reload: Runnable? = null
         var mId: Long = 0
 
-        fun init(adapterIMPL: LoadingAdapterIMPL, loadingView: ILoadingView?, errorView: ILoadingView?, mId: Long): FragmentIMPL {
+        fun init(adapterIMPL: LoadingAdapterIMPL, loadingView: ILoadingView?, errorView: ILoadingView?, netErrorView: ILoadingView?, mId: Long): FragmentIMPL {
             this.loadingView = loadingView
             this.errorView = errorView
+            this.netErrorView = netErrorView
             this.reload = adapterIMPL.mReload
             this.mId = mId
             return this
         }
 
+        override fun onDestroyView() {
+            super.onDestroyView()
+        }
 
         override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             var mView: ViewGroup
             if (inflater != null) {
-                if (mLoadingView == null || mErrorView == null) {
+                if (mLoadingView == null || mErrorView == null || mNetErrorView == null) {
                     this.mLoadingView = loadingView?.onCreateView(inflater.context)
                     this.mErrorView = errorView?.onCreateView(inflater.context)
+                    this.mNetErrorView = netErrorView?.onCreateView(inflater.context)
                 }
                 mView = FrameLayout(inflater.context)
                 if (mLoadingView?.parent is ViewGroup) {
@@ -144,10 +158,15 @@ class LoadingAdapterIMPL : LoadingAadpter {
                 if (mErrorView?.parent is ViewGroup) {
                     (mErrorView?.parent as ViewGroup).removeView(mErrorView)
                 }
+                if (mNetErrorView?.parent is ViewGroup) {
+                    (mNetErrorView?.parent as ViewGroup).removeView(mNetErrorView)
+                }
                 mLoadingView?.visibility = View.GONE
                 mErrorView?.visibility = View.GONE
+                mNetErrorView?.visibility = View.GONE
                 mView.addView(mLoadingView)
                 mView.addView(mErrorView)
+                mView.addView(mNetErrorView)
                 val metrics = resources.displayMetrics
                 mView.minimumWidth = metrics.widthPixels
                 mView.minimumHeight = metrics.heightPixels
@@ -165,6 +184,12 @@ class LoadingAdapterIMPL : LoadingAadpter {
                 }
                 true
             }
+            mNetErrorView?.setOnTouchListener { _, motionEvent ->
+                if (motionEvent.action == MotionEvent.ACTION_UP) {
+                    reload?.run()
+                }
+                true
+            }
         }
 
         fun updateView() {
@@ -175,14 +200,23 @@ class LoadingAdapterIMPL : LoadingAadpter {
                 LOADING -> {
                     mLoadingView?.visibility = View.VISIBLE
                     mErrorView?.visibility = View.GONE
+                    mNetErrorView?.visibility = View.GONE
                 }
                 LOADFAIL -> {
                     mLoadingView?.visibility = View.GONE
-                    mErrorView?.visibility = View.VISIBLE
+                    if (isNetworkValid(view?.context)) {
+                        mErrorView?.visibility = View.VISIBLE
+                        mNetErrorView?.visibility = View.GONE
+                    } else {
+                        mErrorView?.visibility = View.GONE
+                        mNetErrorView?.visibility = View.VISIBLE
+                    }
+
                 }
                 else -> {
                     mLoadingView?.visibility = View.GONE
                     mErrorView?.visibility = View.GONE
+                    mNetErrorView?.visibility = View.GONE
                 }
             }
 
