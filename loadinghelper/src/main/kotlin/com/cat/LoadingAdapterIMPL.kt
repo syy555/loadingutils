@@ -2,9 +2,9 @@ package com.cat
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -14,26 +14,30 @@ import android.widget.FrameLayout
 import com.cat.LoadingHelper.HIDE
 import com.cat.LoadingHelper.LOADFAIL
 import com.cat.LoadingHelper.LOADING
+import com.cat.loadinghelper.R
+import android.R.attr.tag
+
+
 
 
 class LoadingAdapterIMPL : LoadingAadpter {
 
     val tag = "loading_fragment"
     var mReload: Runnable? = null
-    var containerId = 0
+    lateinit var container: ViewGroup
     var loadingLayout: ILoadingView? = null
     var dialogLayout: ILoadingView? = null
     var errorLayout: ILoadingView? = null
     var netErrorLayout: ILoadingView? = null
     lateinit var manager: FragmentManager
-    lateinit var fragment: FragmentIMPL
+    lateinit var fragment: ViewIMPL
     var dialog: DialogIMPL? = null
     private var id: Long = System.currentTimeMillis()
 
-    fun init(manager: FragmentManager, containerId: Int, reload: Runnable?, loading: ILoadingView, dialogLayout: ILoadingView, error: ILoadingView, netError: ILoadingView) {
+    fun init(manager: FragmentManager, view: ViewGroup, reload: Runnable?, loading: ILoadingView, dialogLayout: ILoadingView, error: ILoadingView, netError: ILoadingView) {
         this.mReload = reload
         this.manager = manager
-        this.containerId = containerId
+        this.container = view
         this.loadingLayout = loading
         this.dialogLayout = dialogLayout
         this.errorLayout = error
@@ -70,27 +74,22 @@ class LoadingAdapterIMPL : LoadingAadpter {
 
     fun initFragment() {
         try {
-            fragment = manager.findFragmentByTag(tag) as FragmentIMPL
-            manager.beginTransaction()?.remove(fragment)?.commitAllowingStateLoss()
-            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, netErrorLayout, id)
-            manager.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
+            var view =  container.findViewById(R.id.loading_utils_view_holder) as View
+            container.removeView(view)
         } catch (e: Exception) {
-            fragment = FragmentIMPL().init(this, loadingLayout, errorLayout, netErrorLayout, id)
-            manager?.beginTransaction()?.add(containerId, fragment, tag)?.commitAllowingStateLoss()
         }
-
+        fragment = ViewIMPL().init(container.context, this, loadingLayout, errorLayout, netErrorLayout)
+        container.addView(fragment.mView)
     }
 
     override fun showLoading() {
-        hide()
         fragment.mType = LOADING
-        show()
+        fragment.updateView()
     }
 
     override fun showLoaderr() {
-        hide()
         fragment.mType = LOADFAIL
-        show()
+        fragment.updateView()
     }
 
 
@@ -103,23 +102,15 @@ class LoadingAdapterIMPL : LoadingAadpter {
     }
 
 
-    private fun show() {
-        manager.beginTransaction()?.show(fragment)?.commitAllowingStateLoss()
-        fragment.updateView()
-    }
 
     override fun hide() {
-        try {
-            manager.beginTransaction().hide(fragment).commitAllowingStateLoss()
-        } catch (e: Exception) {
-            fragment = manager.findFragmentByTag(tag) as FragmentIMPL
-            manager?.beginTransaction().hide(fragment)?.commitAllowingStateLoss()
-        }
+        fragment.mType = LOADFAIL
+        fragment.updateView()
         dialog?.dismissAllowingStateLoss()
     }
 
     @SuppressLint("ValidFragment")
-    class FragmentIMPL : Fragment() {
+    class ViewIMPL() {
         var mLoadingView: View? = null
         var mErrorView: View? = null
         var mNetErrorView: View? = null
@@ -128,56 +119,42 @@ class LoadingAdapterIMPL : LoadingAadpter {
         var netErrorView: ILoadingView? = null
         var mType: Int = HIDE
         var reload: Runnable? = null
-        var mId: Long = 0
+        lateinit var mView: ViewGroup
 
-        fun init(adapterIMPL: LoadingAdapterIMPL, loadingView: ILoadingView?, errorView: ILoadingView?, netErrorView: ILoadingView?, mId: Long): FragmentIMPL {
+        fun init(context: Context, adapterIMPL: LoadingAdapterIMPL, loadingView: ILoadingView?, errorView: ILoadingView?, netErrorView: ILoadingView?): ViewIMPL {
             this.loadingView = loadingView
             this.errorView = errorView
             this.netErrorView = netErrorView
             this.reload = adapterIMPL.mReload
-            this.mId = mId
+            var inflater = LayoutInflater.from(context)
+            if (mLoadingView == null || mErrorView == null || mNetErrorView == null) {
+                this.mLoadingView = loadingView?.onCreateView(inflater.context)
+                this.mErrorView = errorView?.onCreateView(inflater.context)
+                this.mNetErrorView = netErrorView?.onCreateView(inflater.context)
+            }
+            mView = FrameLayout(inflater.context)
+            if (mLoadingView?.parent is ViewGroup) {
+                (mLoadingView?.parent as ViewGroup).removeView(mLoadingView)
+            }
+            if (mErrorView?.parent is ViewGroup) {
+                (mErrorView?.parent as ViewGroup).removeView(mErrorView)
+            }
+            if (mNetErrorView?.parent is ViewGroup) {
+                (mNetErrorView?.parent as ViewGroup).removeView(mNetErrorView)
+            }
+            mLoadingView?.visibility = View.GONE
+            mErrorView?.visibility = View.GONE
+            mNetErrorView?.visibility = View.GONE
+            mView.addView(mLoadingView)
+            mView.addView(mErrorView)
+            mView.addView(mNetErrorView)
+            val metrics = context.resources.displayMetrics
+            mView.minimumWidth = metrics.widthPixels
+            mView.minimumHeight = metrics.heightPixels
             return this
         }
 
-        override fun onDestroyView() {
-            super.onDestroyView()
-        }
-
-        override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-            var mView: ViewGroup
-            if (inflater != null) {
-                if (mLoadingView == null || mErrorView == null || mNetErrorView == null) {
-                    this.mLoadingView = loadingView?.onCreateView(inflater.context)
-                    this.mErrorView = errorView?.onCreateView(inflater.context)
-                    this.mNetErrorView = netErrorView?.onCreateView(inflater.context)
-                }
-                mView = FrameLayout(inflater.context)
-                if (mLoadingView?.parent is ViewGroup) {
-                    (mLoadingView?.parent as ViewGroup).removeView(mLoadingView)
-                }
-                if (mErrorView?.parent is ViewGroup) {
-                    (mErrorView?.parent as ViewGroup).removeView(mErrorView)
-                }
-                if (mNetErrorView?.parent is ViewGroup) {
-                    (mNetErrorView?.parent as ViewGroup).removeView(mNetErrorView)
-                }
-                mLoadingView?.visibility = View.GONE
-                mErrorView?.visibility = View.GONE
-                mNetErrorView?.visibility = View.GONE
-                mView.addView(mLoadingView)
-                mView.addView(mErrorView)
-                mView.addView(mNetErrorView)
-                val metrics = resources.displayMetrics
-                mView.minimumWidth = metrics.widthPixels
-                mView.minimumHeight = metrics.heightPixels
-                return mView
-            }
-            return null
-        }
-
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            updateView()
+        fun updateView() {
             mErrorView?.setOnTouchListener { _, motionEvent ->
                 if (motionEvent.action == MotionEvent.ACTION_UP) {
                     reload?.run()
@@ -190,12 +167,6 @@ class LoadingAdapterIMPL : LoadingAadpter {
                 }
                 true
             }
-        }
-
-        fun updateView() {
-            if (view !is View) {
-                return
-            }
             when (mType) {
                 LOADING -> {
                     mLoadingView?.visibility = View.VISIBLE
@@ -204,7 +175,7 @@ class LoadingAdapterIMPL : LoadingAadpter {
                 }
                 LOADFAIL -> {
                     mLoadingView?.visibility = View.GONE
-                    if (isNetworkValid(view?.context)) {
+                    if (isNetworkValid(mView.context)) {
                         mErrorView?.visibility = View.VISIBLE
                         mNetErrorView?.visibility = View.GONE
                     } else {
@@ -236,6 +207,12 @@ class LoadingAdapterIMPL : LoadingAadpter {
             return this
         }
 
+        override fun show(manager: FragmentManager?, tag: String?) {
+            try {
+                super.show(manager, tag)
+            } catch (ignore: IllegalStateException) {
+            }
+        }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             super.setCancelable(false)

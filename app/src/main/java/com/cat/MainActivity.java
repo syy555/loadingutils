@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadingAadpter = LoadingHelper.INSTANCE.LoadingHelper(getSupportFragmentManager(), R.id.container, new Runnable() {
+        loadingAadpter = LoadingHelper.INSTANCE.LoadingHelper(getSupportFragmentManager(), (ViewGroup) findViewById(R.id.container), new Runnable() {
             @Override
             public void run() {
                 loadingAadpter.hide();
@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 FrameLayout frameLayout = new FrameLayout(getBaseContext());
-                frameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+                frameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 frameLayout.setId(R.id.container);
-                ((ViewGroup)findViewById(R.id.parent)).addView(frameLayout);
-                loadingAadpter = LoadingHelper.INSTANCE.LoadingHelper(getSupportFragmentManager(), R.id.container, new Runnable() {
+                ((ViewGroup) findViewById(R.id.parent)).addView(frameLayout);
+                loadingAadpter = LoadingHelper.INSTANCE.LoadingHelper(getSupportFragmentManager(), (ViewGroup) findViewById(R.id.container), new Runnable() {
                     @Override
                     public void run() {
                         loadingAadpter.hide();
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tv_remove).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ViewGroup)findViewById(R.id.parent)).removeAllViews();
+                ((ViewGroup) findViewById(R.id.parent)).removeAllViews();
             }
         });
 

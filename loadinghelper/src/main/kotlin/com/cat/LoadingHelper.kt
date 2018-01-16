@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.cat.loadinghelper.R
 
 
@@ -43,9 +44,9 @@ object LoadingHelper {
     }
 
 
-    fun LoadingHelper(manager: FragmentManager, containerId: Int, reload: Runnable?): LoadingAadpter {
+    fun LoadingHelper(manager: FragmentManager, view: ViewGroup, reload: Runnable?): LoadingAadpter {
         val adapter = LoadingAdapterIMPL()
-        adapter.init(manager, containerId, reload,defaultLoadingId,defaultDialogId,defaultErrorId,defaultNetErrorId)
+        adapter.init(manager, view, reload,defaultLoadingId,defaultDialogId,defaultErrorId,defaultNetErrorId)
         return adapter
     }
 }
