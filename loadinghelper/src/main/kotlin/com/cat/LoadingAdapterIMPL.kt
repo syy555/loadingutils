@@ -104,7 +104,7 @@ class LoadingAdapterIMPL : LoadingAadpter {
 
 
     override fun hide() {
-        fragment.mType = LOADFAIL
+        fragment.mType = HIDE
         fragment.updateView()
         dialog?.dismissAllowingStateLoss()
     }
