@@ -155,18 +155,20 @@ class LoadingAdapterIMPL : LoadingAadpter {
         }
 
         fun updateView() {
-            mErrorView?.setOnTouchListener { _, motionEvent ->
-                if (motionEvent.action == MotionEvent.ACTION_UP) {
-                    reload?.run()
-                }
-                true
-            }
-            mNetErrorView?.setOnTouchListener { _, motionEvent ->
-                if (motionEvent.action == MotionEvent.ACTION_UP) {
-                    reload?.run()
-                }
-                true
-            }
+            mErrorView?.setOnClickListener {  reload?.run() }
+            mNetErrorView?.setOnClickListener {  reload?.run() }
+//            mErrorView?.setOnTouchListener { _, motionEvent ->
+//                if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+//                    reload?.run()
+//                }
+//                false
+//            }
+//            mNetErrorView?.setOnTouchListener { _, motionEvent ->
+//                if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+//                    reload?.run()
+//                }
+//                false
+//            }
             when (mType) {
                 LOADING -> {
                     mLoadingView?.visibility = View.VISIBLE
