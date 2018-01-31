@@ -15,24 +15,27 @@ public class MainActivity extends AppCompatActivity {
 
     LoadingAadpter loadingAadpter;
 
+    PlaceHolderAadpter placeHolderAadpter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadingAadpter = LoadingHelper.INSTANCE.LoadingHelper(getSupportFragmentManager(), (ViewGroup) findViewById(R.id.container), new Runnable() {
+        placeHolderAadpter  = LoadingFactory.INSTANCE.create((ViewGroup) findViewById(R.id.container), new Runnable() {
             @Override
             public void run() {
-                loadingAadpter.hide();
+                placeHolderAadpter.hide();
             }
         });
+        loadingAadpter = LoadingFactory.INSTANCE.create(this);
         findViewById(R.id.tv_loading).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingAadpter.showLoading();
+                placeHolderAadpter.showLoading();
                 findViewById(R.id.tv_loading).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        loadingAadpter.showLoaderr();
+                        placeHolderAadpter.showLoaderr();
                     }
                 }, 2000);
             }
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tv_dialog_loading).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingAadpter.showDialogLoading();
+                loadingAadpter.showLoading();
                 findViewById(R.id.tv_loading).postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tv_error).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingAadpter.showLoaderr();
+                placeHolderAadpter.showLoaderr();
 
             }
         });
@@ -66,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
                 frameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 frameLayout.setId(R.id.container);
                 ((ViewGroup) findViewById(R.id.parent)).addView(frameLayout);
-                loadingAadpter = LoadingHelper.INSTANCE.LoadingHelper(getSupportFragmentManager(), (ViewGroup) findViewById(R.id.container), new Runnable() {
+                placeHolderAadpter  = LoadingFactory.INSTANCE.create((ViewGroup) findViewById(R.id.container), new Runnable() {
                     @Override
                     public void run() {
-                        loadingAadpter.hide();
+                        placeHolderAadpter.hide();
                     }
                 });
             }

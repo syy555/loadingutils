@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.cat.loadinghelper.R
 
 
-object LoadingHelper {
+object LoadingFactory {
 
     val HIDE = 0
     val LOADING = 1
@@ -44,9 +44,15 @@ object LoadingHelper {
     }
 
 
-    fun LoadingHelper(manager: FragmentManager, view: ViewGroup, reload: Runnable?): LoadingAadpter {
+    fun create(context:Context): LoadingAadpter {
         val adapter = LoadingAdapterIMPL()
-        adapter.init(manager, view, reload,defaultLoadingId,defaultDialogId,defaultErrorId,defaultNetErrorId)
+        adapter.init(context,defaultDialogId)
+        return adapter
+    }
+
+    fun create(view: ViewGroup, reload: Runnable?): PlaceHolderAadpter {
+        val adapter = PlaceHolderAdapterIMPL()
+        adapter.init(view, reload,defaultLoadingId,defaultErrorId,defaultNetErrorId)
         return adapter
     }
 }

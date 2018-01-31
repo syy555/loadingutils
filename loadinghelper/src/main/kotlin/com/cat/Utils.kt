@@ -1,8 +1,11 @@
 package com.cat
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.support.v4.app.FragmentActivity
 
 /**
  * Created by lee on 2017/12/7.
@@ -32,4 +35,15 @@ fun isNetworkValid(context: Context?): Boolean {
         }
     }
     return result
+}
+
+fun castToFragmentActivity(context: Context): FragmentActivity {
+    var context = context
+    while (context is ContextWrapper) {
+        if (context is FragmentActivity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    throw IllegalArgumentException("Not an FragmentActivity or a wrapper with Activity.")
 }
