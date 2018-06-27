@@ -58,6 +58,7 @@ class PlaceHolderAdapterIMPL : PlaceHolderAdapter {
         } catch (e: Exception) {
         }
         fragment = ViewIMPL().init(container.context, this, loadingLayout, errorLayout, netErrorLayout)
+        fragment.mView.id = R.id.loading_utils_view_holder
         container.addView(fragment.mView)
     }
 
