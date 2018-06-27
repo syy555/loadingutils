@@ -19,7 +19,7 @@ class PlaceHolderAdapterIMPL : PlaceHolderAdapter {
     var loadingLayout: ILoadingView? = null
     var errorLayout: ILoadingView? = null
     var netErrorLayout: ILoadingView? = null
-    lateinit var fragment: ViewIMPL
+    lateinit var viewHolder: ViewIMPL
 
     fun init(view: ViewGroup, reload: Runnable?, loading: ILoadingView, error: ILoadingView, netError: ILoadingView) {
         this.mReload = reload
@@ -27,60 +27,60 @@ class PlaceHolderAdapterIMPL : PlaceHolderAdapter {
         this.loadingLayout = loading
         this.errorLayout = error
         this.netErrorLayout = netError
-        initFragment()
+        initviewHolder()
     }
 
     override fun updateReload(reload: Runnable) {
         this.mReload = reload
-        fragment.reload = reload
+        viewHolder.reload = reload
     }
 
     override fun updateLodingLayout(loading: ILoadingView) {
         this.loadingLayout = loading
-        initFragment()
+        initviewHolder()
     }
 
     override fun updateErrorLayout(error: ILoadingView) {
         this.errorLayout = error
-        initFragment()
+        initviewHolder()
     }
 
     override fun updateNetErrorLayout(error: ILoadingView) {
         this.netErrorLayout = error
-        initFragment()
+        initviewHolder()
     }
 
 
-    fun initFragment() {
+    fun initviewHolder() {
         try {
             var view =  container.findViewById(R.id.loading_utils_view_holder) as View
             container.removeView(view)
         } catch (e: Exception) {
         }
-        fragment = ViewIMPL().init(container.context, this, loadingLayout, errorLayout, netErrorLayout)
-        fragment.mView.id = R.id.loading_utils_view_holder
-        container.addView(fragment.mView)
+        viewHolder = ViewIMPL().init(container.context, this, loadingLayout, errorLayout, netErrorLayout)
+        viewHolder.mView.id = R.id.loading_utils_view_holder
+        container.addView(viewHolder.mView)
     }
 
     override fun showLoading() {
-        fragment.mType = LOADING
-        fragment.updateView()
+        viewHolder.mType = LOADING
+        viewHolder.updateView()
     }
 
     override fun showLoaderr() {
-        fragment.mType = LOADFAIL
-        fragment.updateView()
+        viewHolder.mType = LOADFAIL
+        viewHolder.updateView()
     }
 
 
 
 
     override fun hide() {
-        fragment.mType = HIDE
-        fragment.updateView()
+        viewHolder.mType = HIDE
+        viewHolder.updateView()
     }
 
-    @SuppressLint("ValidFragment")
+    @SuppressLint("ValidviewHolder")
     class ViewIMPL() {
         var mLoadingView: View? = null
         var mErrorView: View? = null
@@ -128,18 +128,6 @@ class PlaceHolderAdapterIMPL : PlaceHolderAdapter {
         fun updateView() {
             mErrorView?.setOnClickListener {  reload?.run() }
             mNetErrorView?.setOnClickListener {  reload?.run() }
-//            mErrorView?.setOnTouchListener { _, motionEvent ->
-//                if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-//                    reload?.run()
-//                }
-//                false
-//            }
-//            mNetErrorView?.setOnTouchListener { _, motionEvent ->
-//                if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-//                    reload?.run()
-//                }
-//                false
-//            }
             when (mType) {
                 LOADING -> {
                     mLoadingView?.visibility = View.VISIBLE
@@ -166,6 +154,4 @@ class PlaceHolderAdapterIMPL : PlaceHolderAdapter {
 
         }
     }
-
-
 }
