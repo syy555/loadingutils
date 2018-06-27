@@ -1,13 +1,8 @@
 package com.cat
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
-import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -17,7 +12,7 @@ import com.cat.LoadingFactory.LOADING
 import com.cat.loadinghelper.R
 
 
-class PlaceHolderAdapterIMPL : PlaceHolderAadpter {
+class PlaceHolderAdapterIMPL : PlaceHolderAdapter {
 
     var mReload: Runnable? = null
     lateinit var container: ViewGroup

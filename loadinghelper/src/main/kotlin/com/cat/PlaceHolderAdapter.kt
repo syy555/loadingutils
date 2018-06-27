@@ -1,7 +1,7 @@
 package com.cat
 
 
-interface PlaceHolderAadpter {
+interface PlaceHolderAdapter {
 
     // 更新网络失败的点击事件
     fun updateReload(reload: Runnable)

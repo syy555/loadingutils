@@ -1,7 +1,6 @@
 package com.cat
 
 import android.content.Context
-import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,13 +43,13 @@ object LoadingFactory {
     }
 
 
-    fun create(context:Context): LoadingAadpter {
+    fun create(context:Context): LoadingAdapter {
         val adapter = LoadingAdapterIMPL()
         adapter.init(context,defaultDialogId)
         return adapter
     }
 
-    fun create(view: ViewGroup, reload: Runnable?): PlaceHolderAadpter {
+    fun create(view: ViewGroup, reload: Runnable?): PlaceHolderAdapter {
         val adapter = PlaceHolderAdapterIMPL()
         adapter.init(view, reload,defaultLoadingId,defaultErrorId,defaultNetErrorId)
         return adapter

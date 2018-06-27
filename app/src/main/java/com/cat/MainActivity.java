@@ -13,9 +13,9 @@ import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    LoadingAadpter loadingAadpter;
+    LoadingAdapter loadingAadpter;
 
-    PlaceHolderAadpter placeHolderAadpter;
+    PlaceHolderAdapter placeHolderAadpter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

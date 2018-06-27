@@ -1,7 +1,7 @@
 package com.cat
 
 
-interface LoadingAadpter {
+interface LoadingAdapter {
 
     fun updateDialogLayout(dialog: ILoadingView)
 

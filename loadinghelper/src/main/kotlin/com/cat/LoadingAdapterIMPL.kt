@@ -10,14 +10,10 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import com.cat.LoadingFactory.HIDE
-import com.cat.LoadingFactory.LOADFAIL
 import com.cat.LoadingFactory.LOADING
-import com.cat.loadinghelper.R
 
 
-class LoadingAdapterIMPL : LoadingAadpter {
+class LoadingAdapterIMPL : LoadingAdapter {
 
     var mReload: Runnable? = null
     var dialogLayout: ILoadingView? = null
