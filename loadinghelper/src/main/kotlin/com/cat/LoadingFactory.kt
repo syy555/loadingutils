@@ -43,15 +43,17 @@ object LoadingFactory {
     }
 
 
-    fun create(context:Context): LoadingAdapter {
+    @JvmOverloads
+    fun create(context:Context,dialogId:ILoadingView = defaultDialogId): LoadingAdapter {
         val adapter = LoadingAdapterIMPL()
-        adapter.init(context,defaultDialogId)
+        adapter.init(context,dialogId)
         return adapter
     }
 
-    fun create(view: ViewGroup, reload: Runnable?): PlaceHolderAdapter {
+    @JvmOverloads
+    fun create(view: ViewGroup, reload: Runnable?,loadingid:ILoadingView = defaultLoadingId,errorId:ILoadingView = defaultErrorId,netErrorId:ILoadingView = defaultNetErrorId): PlaceHolderAdapter {
         val adapter = PlaceHolderAdapterIMPL()
-        adapter.init(view, reload,defaultLoadingId,defaultErrorId,defaultNetErrorId)
+        adapter.init(view, reload,loadingid,errorId,netErrorId)
         return adapter
     }
 }
