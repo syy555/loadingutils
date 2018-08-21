@@ -5,5 +5,5 @@ import android.view.View
 
 
 interface ILoadingView {
-    fun onCreateView(context: Context?): View
+    fun onCreateView(context: Context): View
 }
