@@ -14,14 +14,14 @@ object LoadingFactory {
     val LOADFAIL = 2
     var defaultLoadingId: ILoadingView = object : ILoadingView {
 
-        override fun onCreateView(context: Context?): View {
+        override fun onCreateView(context: Context): View {
             return LayoutInflater.from(context).inflate(R.layout.view_default_loading, null)
         }
     }
 
     var defaultDialogId: ILoadingView = object : ILoadingView {
 
-        override fun onCreateView(context: Context?): View {
+        override fun onCreateView(context: Context): View {
             return LayoutInflater.from(context).inflate(R.layout.view_default_loading, null)
         }
 
@@ -30,14 +30,14 @@ object LoadingFactory {
 
     var defaultErrorId: ILoadingView = object : ILoadingView {
 
-        override fun onCreateView(context: Context?): View {
+        override fun onCreateView(context: Context): View {
             return LayoutInflater.from(context).inflate(R.layout.view_default_error, null)
         }
     }
 
     var defaultNetErrorId: ILoadingView = object : ILoadingView {
 
-        override fun onCreateView(context: Context?): View {
+        override fun onCreateView(context: Context): View {
             return LayoutInflater.from(context).inflate(R.layout.view_default_error, null)
         }
     }
