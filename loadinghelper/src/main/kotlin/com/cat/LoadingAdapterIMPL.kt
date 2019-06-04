@@ -43,6 +43,7 @@ class LoadingAdapterIMPL : LoadingAdapter {
 
     override fun hide() {
         dialog?.dismissAllowingStateLoss()
+        dialog = null
     }
 
 
